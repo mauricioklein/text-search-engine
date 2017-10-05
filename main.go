@@ -7,8 +7,11 @@ import (
 )
 
 func main() {
-	var path = "./test-utils/files/"
 	var reader Reader = DiskReader{}
+	var reporter Reporter = SimpleReporter{}
+	var rank Ranking = LevenshteinRanking{}
+
+	var path = "./test-utils/files/"
 
 	files, err := reader.Read(path)
 	if err != nil {
@@ -19,8 +22,9 @@ func main() {
 
 	NewConsole(
 		files,
-		LevenshteinRanking{},
+		rank,
 		os.Stdin,
 		os.Stderr,
+		reporter,
 	).Run()
 }
