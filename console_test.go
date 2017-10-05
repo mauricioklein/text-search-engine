@@ -33,7 +33,7 @@ func TestConsoleProcess(t *testing.T) {
 	c.process("Cat")
 
 	actual, _ := w.ReadString('\x00')
-	expected := "file1.txt: 100.000000\nfile2.txt: 100.000000\n"
+	expected := "file1.txt: 100.00% match\nfile2.txt: 100.00% match\n"
 	assert.Equal(t, expected, actual)
 }
 
@@ -48,5 +48,6 @@ func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
 		LevenshteinRanking{},
 		reader,
 		writer,
+		SimpleReporter{},
 	), reader, writer
 }
