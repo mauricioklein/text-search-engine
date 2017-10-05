@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 )
 
 // QuitSentence defines the sentence, read from the
@@ -18,6 +19,13 @@ type Console struct {
 	Rank         Ranking
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
+}
+
+// RankResult defines the result of a
+// rank canculation for a specific file
+type RankResult struct {
+	File File
+	Rank float64
 }
 
 // NewConsole creates a new instance of Console
@@ -52,7 +60,7 @@ func (c Console) Read() (string, error) {
 // Run executes and controls the IO of
 // the console with the user
 func (c Console) Run() {
-	for true {
+	for {
 		c.Write("search> ")
 
 		userInput, err := c.Read()
@@ -70,9 +78,40 @@ func (c Console) Run() {
 }
 
 func (c Console) process(sentence string) {
+	jobs := make(chan File, len(c.Files))
+	results := make(chan RankResult, len(c.Files))
+
+	// create workers
+	var wg sync.WaitGroup
+	for i := 0; i < 3; i++ {
+		wg.Add(1)
+		go c.worker(jobs, results, sentence, &wg)
+	}
+
+	// add jobs to the channel
 	for _, file := range c.Files {
-		rank := c.Rank.Calculate(file.Content, sentence) * 100.0
-		c.Write(fmt.Sprintf("%s: %f\n", file.Name(), rank))
+		jobs <- file
+	}
+	close(jobs)
+
+	// wait for all workers to finish
+	wg.Wait()
+
+	// write out the results
+	close(results)
+	for r := range results {
+		c.Write(fmt.Sprintf("%s: %f\n", r.File.Name(), r.Rank*100.0))
+	}
+}
+
+func (c Console) worker(jobs <-chan File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for file := range jobs {
+		results <- RankResult{
+			File: file,
+			Rank: c.Rank.Calculate(file.Content, sentence),
+		}
 	}
 }
 
