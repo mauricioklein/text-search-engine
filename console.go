@@ -19,6 +19,7 @@ type Console struct {
 	Rank         Ranking
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
+	Reporter     Reporter
 }
 
 // RankResult defines the result of a
@@ -29,7 +30,7 @@ type RankResult struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []File, rank Ranking, inputStream io.Reader, outputStream io.Writer) Console {
+func NewConsole(files []File, rank Ranking, inputStream io.Reader, outputStream io.Writer, reporter Reporter) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 
@@ -38,13 +39,14 @@ func NewConsole(files []File, rank Ranking, inputStream io.Reader, outputStream 
 		Rank:         rank,
 		InputStream:  input,
 		OutputStream: output,
+		Reporter:     reporter,
 	}
 }
 
 // Write writes a string to the console's output stream
 func (c Console) Write(line string) {
 	c.OutputStream.Write([]byte(line))
-	c.OutputStream.Flush()
+	c.Flush()
 }
 
 // Read reads a string from the console's input stream
@@ -55,6 +57,11 @@ func (c Console) Read() (string, error) {
 	}
 
 	return strings.Replace(rawInput, "\n", "", -1), nil
+}
+
+// Flush flushes the content of output stream
+func (c Console) Flush() {
+	c.OutputStream.Flush()
 }
 
 // Run executes and controls the IO of
@@ -100,8 +107,21 @@ func (c Console) process(sentence string) {
 	// write out the results
 	close(results)
 	for r := range results {
-		c.Write(fmt.Sprintf("%s: %f\n", r.File.Name(), r.Rank*100.0))
+		c.ReportResult(r)
 	}
+
+	// Flush the output stream, otherwise the
+	// results aren't printed on console
+	c.Flush()
+}
+
+// ReportResult reports a given result
+func (c Console) ReportResult(rr RankResult) {
+	c.Reporter.Report(
+		c.OutputStream,
+		rr.File.Name(),
+		rr.Rank,
+	)
 }
 
 func (c Console) worker(jobs <-chan File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
