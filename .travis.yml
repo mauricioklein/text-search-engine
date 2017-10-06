@@ -2,3 +2,20 @@ language: go
 
 go:
   - 1.9
+
+before_install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/axw/gocov/gocov
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls 
+
+install:
+  - go get -t ./...
+
+script:
+  - go test -coverprofile=main.coverprofile .
+  - go test -coverprofile=ranking.coverprofile ./ranking
+  - go test -coverprofile=reader.coverprofile ./reader
+  - go test -coverprofile=report.coverprofile ./report
+  - $HOME/gopath/bin/gover
+  - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci -repotoken $COVERALLS_REPO_TOKEN
