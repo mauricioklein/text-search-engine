@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"sync"
 
@@ -108,10 +109,20 @@ func (c Console) process(sentence string) {
 	// wait for all workers to finish
 	wg.Wait()
 
-	// write out the results
+	// process the results
 	close(results)
-	for r := range results {
-		c.ReportResult(r)
+	ranks := toSlice(results)
+
+	// sort the results by rank/filename
+	sort.Sort(
+		sort.Reverse(
+			ByScoreAndName(ranks),
+		),
+	)
+
+	// final report
+	for _, r := range ranks {
+		c.ReportRank(r)
 	}
 
 	// Flush the output stream, otherwise the
@@ -119,8 +130,8 @@ func (c Console) process(sentence string) {
 	c.Flush()
 }
 
-// ReportResult reports a given result
-func (c Console) ReportResult(rr RankResult) {
+// ReportRank reports a given result
+func (c Console) ReportRank(rr RankResult) {
 	c.Reporter.Report(
 		c.OutputStream,
 		rr.File.Name(),
@@ -128,6 +139,7 @@ func (c Console) ReportResult(rr RankResult) {
 	)
 }
 
+// worker performs the rank calculation for a given file
 func (c Console) worker(jobs <-chan reader.File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -139,6 +151,20 @@ func (c Console) worker(jobs <-chan reader.File, results chan<- RankResult, sent
 	}
 }
 
+// isStopCondition checks if the input stream contains
+// the console's stop sentence
 func isStopCondition(userInput string) bool {
 	return userInput == QuitSentence
+}
+
+// toSlice returns a slice with all the elements
+// in the channel
+func toSlice(c <-chan RankResult) []RankResult {
+	var s []RankResult
+
+	for r := range c {
+		s = append(s, r)
+	}
+
+	return s
 }

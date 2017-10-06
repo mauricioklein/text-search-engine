@@ -31,12 +31,7 @@ func TestConsoleWrite(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-//
-// TODO: re-enable this test after the results ordering is done
-//
 func TestConsoleProcess(t *testing.T) {
-	t.Skip()
-
 	c, _, w := NewTestConsole()
 
 	c.process("Cat")
@@ -46,12 +41,7 @@ func TestConsoleProcess(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-//
-// TODO: re-enable this test after the results ordering is done
-//
 func TestConsoleRun(t *testing.T) {
-	t.Skip()
-
 	c, r, w := NewTestConsole()
 
 	// write "user input" data to the read stream
