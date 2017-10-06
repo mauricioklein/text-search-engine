@@ -5,6 +5,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/mauricioklein/text-search-engine/ranking"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -71,7 +72,7 @@ func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
 
 	return NewConsole(
 		files,
-		LevenshteinRanking{},
+		ranking.LevenshteinRanking{},
 		SimpleReporter{},
 		reader,
 		writer,

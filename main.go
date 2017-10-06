@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/mauricioklein/text-search-engine/ranking"
 )
 
 // CliArgs defines the command line arguments
@@ -70,9 +72,9 @@ func instantiateReporter(reporterType string) Reporter {
 	}
 }
 
-func instantiateRankingAlgorithm(algType string) Ranking {
+func instantiateRankingAlgorithm(algType string) ranking.Algorithm {
 	switch algType {
 	default:
-		return LevenshteinRanking{}
+		return ranking.LevenshteinRanking{}
 	}
 }

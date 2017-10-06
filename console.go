@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"github.com/mauricioklein/text-search-engine/ranking"
 )
 
 // QuitSentence defines the sentence, read from the
@@ -16,7 +18,7 @@ const QuitSentence = "\\q"
 // interactive console
 type Console struct {
 	Files        []File
-	Rank         Ranking
+	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
 	Reporter     Reporter
@@ -30,13 +32,13 @@ type RankResult struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []File, rank Ranking, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
+func NewConsole(files []File, algo ranking.Algorithm, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 
 	return Console{
 		Files:        files,
-		Rank:         rank,
+		Algorithm:    algo,
 		Reporter:     reporter,
 		InputStream:  input,
 		OutputStream: output,
@@ -130,7 +132,7 @@ func (c Console) worker(jobs <-chan File, results chan<- RankResult, sentence st
 	for file := range jobs {
 		results <- RankResult{
 			File: file,
-			Rank: c.Rank.Calculate(file.Content, sentence),
+			Rank: c.Algorithm.Calculate(file.Content, sentence),
 		}
 	}
 }
