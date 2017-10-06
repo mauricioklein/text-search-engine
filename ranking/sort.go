@@ -1,4 +1,4 @@
-package main
+package ranking
 
 // ByScoreAndName defines the sorting algorithm of
 // result by ranking and filename
@@ -13,9 +13,9 @@ func (bsan ByScoreAndName) Swap(i, j int) {
 }
 
 func (bsan ByScoreAndName) Less(i, j int) bool {
-	if bsan[i].Rank != bsan[j].Rank {
+	if bsan[i].Score != bsan[j].Score {
 		// Sort by rank
-		return bsan[i].Rank < bsan[j].Rank
+		return bsan[i].Score < bsan[j].Score
 	}
 
 	/*

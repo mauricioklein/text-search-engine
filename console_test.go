@@ -41,16 +41,6 @@ func TestConsoleErrorStream(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestConsoleProcess(t *testing.T) {
-	c, _, w, _ := NewTestConsole()
-
-	c.process("Cat")
-
-	actual, _ := w.ReadString('\x00')
-	expected := "file1.txt: 100.00% match\nfile2.txt: 100.00% match\nfile3.txt: 0.00% match\n"
-	assert.Equal(t, expected, actual)
-}
-
 func TestConsoleRun(t *testing.T) {
 	c, r, w, _ := NewTestConsole()
 
