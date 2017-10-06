@@ -6,7 +6,6 @@ import (
 	"io"
 	"sort"
 	"strings"
-	"sync"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
 	"github.com/mauricioklein/text-search-engine/reader"
@@ -20,19 +19,11 @@ const QuitSentence = "\\q"
 // Console defines an instance of the
 // interactive console
 type Console struct {
-	Files        []reader.File
-	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
 	ErrorStream  *bufio.Writer
+	Processor    ranking.Processor
 	Reporter     report.Reporter
-}
-
-// RankResult defines the result of a
-// rank canculation for a specific file
-type RankResult struct {
-	File reader.File
-	Rank float64
 }
 
 // NewConsole creates a new instance of Console
@@ -41,13 +32,14 @@ func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Rep
 	outputBuffer := bufio.NewWriter(outputStream)
 	errBuffer := bufio.NewWriter(errStream)
 
+	processor := ranking.NewProcessor(files, 3, algo)
+
 	return Console{
-		Files:        files,
-		Algorithm:    algo,
-		Reporter:     reporter,
 		InputStream:  inputBuffer,
 		OutputStream: outputBuffer,
 		ErrorStream:  errBuffer,
+		Processor:    processor,
+		Reporter:     reporter,
 	}
 }
 
@@ -94,53 +86,28 @@ func (c Console) Run() {
 			break
 		}
 
-		c.process(userInput)
+		// calculate the ranks
+		ranks := c.Processor.Calculate(userInput)
+
+		// order ranks by score/filename
+		sort.Sort(
+			sort.Reverse(
+				ranking.ByScoreAndName(ranks),
+			),
+		)
+
+		// print out the results
+		for _, rank := range ranks {
+			c.ReportRank(rank)
+		}
+
+		// flush the output stream
+		c.Flush()
 	}
-}
-
-func (c Console) process(sentence string) {
-	jobs := make(chan reader.File, len(c.Files))
-	results := make(chan RankResult, len(c.Files))
-
-	// create workers
-	var wg sync.WaitGroup
-	for i := 0; i < 3; i++ {
-		wg.Add(1)
-		go c.worker(jobs, results, sentence, &wg)
-	}
-
-	// add jobs to the channel
-	for _, file := range c.Files {
-		jobs <- file
-	}
-	close(jobs)
-
-	// wait for all workers to finish
-	wg.Wait()
-
-	// process the results
-	close(results)
-	ranks := toSlice(results)
-
-	// sort the results by rank/filename
-	sort.Sort(
-		sort.Reverse(
-			ByScoreAndName(ranks),
-		),
-	)
-
-	// final report
-	for _, r := range ranks {
-		c.ReportRank(r)
-	}
-
-	// Flush the output stream, otherwise the
-	// results aren't printed on console
-	c.Flush()
 }
 
 // ReportRank reports a given result
-func (c Console) ReportRank(rr RankResult) {
+func (c Console) ReportRank(rr ranking.RankResult) {
 	c.Reporter.Report(
 		c.OutputStream,
 		rr.File.Name(),
@@ -148,32 +115,8 @@ func (c Console) ReportRank(rr RankResult) {
 	)
 }
 
-// worker performs the rank calculation for a given file
-func (c Console) worker(jobs <-chan reader.File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	for file := range jobs {
-		results <- RankResult{
-			File: file,
-			Rank: c.Algorithm.Calculate(file.Content, sentence),
-		}
-	}
-}
-
 // isStopCondition checks if the input stream contains
 // the console's stop sentence
 func isStopCondition(userInput string) bool {
 	return userInput == QuitSentence
-}
-
-// toSlice returns a slice with all the elements
-// in the channel
-func toSlice(c <-chan RankResult) []RankResult {
-	var s []RankResult
-
-	for r := range c {
-		s = append(s, r)
-	}
-
-	return s
 }
