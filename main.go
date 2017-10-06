@@ -41,7 +41,7 @@ func main() {
 		rank,
 		reporter,
 		os.Stdin,
-		os.Stderr,
+		os.Stdout,
 	).Run()
 }
 
