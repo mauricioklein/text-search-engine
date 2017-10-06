@@ -34,11 +34,11 @@ func processFile(filepath string, file os.FileInfo, acc *[]File) error {
 		return err
 	}
 
-	*acc = append(*acc, NewFile(
-		path.Dir(filepath),
-		file,
-		string(content),
-	))
+	*acc = append(*acc, File{
+		FileInfo: file,
+		Path:     path.Dir(filepath),
+		Content:  string(content),
+	})
 
 	return nil
 }
