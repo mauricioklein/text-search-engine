@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsoleRead(t *testing.T) {
-	c, r, _ := NewTestConsole()
+func TestConsoleInputStream(t *testing.T) {
+	c, r, _, _ := NewTestConsole()
 
 	r.WriteString("Foobar\n")
 
@@ -21,8 +21,8 @@ func TestConsoleRead(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestConsoleWrite(t *testing.T) {
-	c, _, w := NewTestConsole()
+func TestConsoleOutputStream(t *testing.T) {
+	c, _, w, _ := NewTestConsole()
 
 	c.Write("Foobar")
 
@@ -31,8 +31,18 @@ func TestConsoleWrite(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestConsoleErrorStream(t *testing.T) {
+	c, _, _, e := NewTestConsole()
+
+	c.Error("a generic error")
+
+	actual, _ := e.ReadString('\x00')
+	expected := "a generic error"
+	assert.Equal(t, expected, actual)
+}
+
 func TestConsoleProcess(t *testing.T) {
-	c, _, w := NewTestConsole()
+	c, _, w, _ := NewTestConsole()
 
 	c.process("Cat")
 
@@ -42,7 +52,7 @@ func TestConsoleProcess(t *testing.T) {
 }
 
 func TestConsoleRun(t *testing.T) {
-	c, r, w := NewTestConsole()
+	c, r, w, _ := NewTestConsole()
 
 	// write "user input" data to the read stream
 	r.Write([]byte("Cat\n")) // actual search sentence
@@ -61,19 +71,21 @@ func TestConsoleRun(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
+func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
 	files, _ := reader.Disk{}.Read("./test-utils/files/")
 
-	reader := bytes.NewBuffer([]byte{})
-	writer := bytes.NewBuffer([]byte{})
+	inBuf := bytes.NewBuffer([]byte{})
+	outBuf := bytes.NewBuffer([]byte{})
+	errBuf := bytes.NewBuffer([]byte{})
 
 	return NewConsole(
 		files,
 		ranking.LevenshteinRanking{},
 		report.SimpleReporter{},
-		reader,
-		writer,
-	), reader, writer
+		inBuf,
+		outBuf,
+		errBuf,
+	), inBuf, outBuf, errBuf
 }
 
 func dispatchConsole(c Console, wg *sync.WaitGroup) {

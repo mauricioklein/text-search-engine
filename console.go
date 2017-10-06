@@ -24,6 +24,7 @@ type Console struct {
 	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
+	ErrorStream  *bufio.Writer
 	Reporter     report.Reporter
 }
 
@@ -35,23 +36,30 @@ type RankResult struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer) Console {
-	input := bufio.NewReader(inputStream)
-	output := bufio.NewWriter(outputStream)
+func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer, errStream io.Writer) Console {
+	inputBuffer := bufio.NewReader(inputStream)
+	outputBuffer := bufio.NewWriter(outputStream)
+	errBuffer := bufio.NewWriter(errStream)
 
 	return Console{
 		Files:        files,
 		Algorithm:    algo,
 		Reporter:     reporter,
-		InputStream:  input,
-		OutputStream: output,
+		InputStream:  inputBuffer,
+		OutputStream: outputBuffer,
+		ErrorStream:  errBuffer,
 	}
 }
 
 // Write writes a string to the console's output stream
 func (c Console) Write(line string) {
 	c.OutputStream.Write([]byte(line))
-	c.Flush()
+	c.OutputStream.Flush()
+}
+
+func (c Console) Error(line string) {
+	c.ErrorStream.Write([]byte(line))
+	c.ErrorStream.Flush()
 }
 
 // Read reads a string from the console's input stream
@@ -67,6 +75,7 @@ func (c Console) Read() (string, error) {
 // Flush flushes the content of output stream
 func (c Console) Flush() {
 	c.OutputStream.Flush()
+	c.ErrorStream.Flush()
 }
 
 // Run executes and controls the IO of
@@ -77,7 +86,7 @@ func (c Console) Run() {
 
 		userInput, err := c.Read()
 		if err != nil {
-			fmt.Printf("Failed to read input: %s", err)
+			c.Error(fmt.Sprintf("Failed to read input: %s", err))
 			continue
 		}
 
