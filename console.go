@@ -30,16 +30,16 @@ type RankResult struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []File, rank Ranking, inputStream io.Reader, outputStream io.Writer, reporter Reporter) Console {
+func NewConsole(files []File, rank Ranking, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 
 	return Console{
 		Files:        files,
 		Rank:         rank,
+		Reporter:     reporter,
 		InputStream:  input,
 		OutputStream: output,
-		Reporter:     reporter,
 	}
 }
 

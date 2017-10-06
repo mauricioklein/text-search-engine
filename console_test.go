@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,6 +38,31 @@ func TestConsoleProcess(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+//
+// TODO: re-enable this test after the results ordering is done
+//
+func TestConsoleRun(t *testing.T) {
+	t.Skip()
+
+	c, r, w := NewTestConsole()
+
+	// write "user input" data to the read stream
+	r.Write([]byte("Cat\n")) // actual search sentence
+	r.Write([]byte("\\q\n")) // quit command
+
+	// Wait for the run command to finish (due the quit command above)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go dispatchConsole(c, &wg)
+	wg.Wait()
+
+	// Read response from the write stream
+	actual, _ := w.ReadString('\x00')
+	expected := "search> file1.txt: 100.00% match\nfile2.txt: 100.00% match\nsearch> "
+
+	assert.Equal(t, expected, actual)
+}
+
 func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
 	files, _ := DiskReader{}.Read("./test-utils/files/")
 
@@ -46,8 +72,13 @@ func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
 	return NewConsole(
 		files,
 		LevenshteinRanking{},
+		SimpleReporter{},
 		reader,
 		writer,
-		SimpleReporter{},
 	), reader, writer
+}
+
+func dispatchConsole(c Console, wg *sync.WaitGroup) {
+	defer wg.Done()
+	c.Run()
 }

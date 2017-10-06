@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 )
 
@@ -30,7 +31,7 @@ func (dr DiskReader) Read(path string) ([]File, error) {
 			continue
 		}
 
-		content, err := ioutil.ReadFile(path + memFile.Name())
+		content, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", path, memFile.Name()))
 		if err != nil {
 			return nil, err
 		}
