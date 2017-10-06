@@ -8,20 +8,20 @@ import (
 )
 
 func TestCalculate(t *testing.T) {
-	files, _ := reader.Disk{}.Read("../test-utils/files/")
+	files, _ := reader.Disk{}.Read("../test-utils/3-files/")
 	processor := NewProcessor(files, 3, LevenshteinRanking{})
 
-	ranks := processor.Calculate("Cat")
+	ranks := processor.Calculate("Ca")
 
 	// Rank: file1.txt
 	rank := findByName(ranks, "file1.txt")
 	assert.Equal(t, rank.File.Name(), "file1.txt")
-	assert.Equal(t, rank.Score, 1.0)
+	assert.InDelta(t, rank.Score, 0.6667, 0.0001)
 
 	// Rank: file2.txt
 	rank = findByName(ranks, "file2.txt")
 	assert.Equal(t, rank.File.Name(), "file2.txt")
-	assert.Equal(t, rank.Score, 1.0)
+	assert.InDelta(t, rank.Score, 0.6667, 0.0001)
 
 	// Rank: file3.txt
 	rank = findByName(ranks, "file3.txt")

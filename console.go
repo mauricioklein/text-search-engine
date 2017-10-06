@@ -93,6 +93,9 @@ func (c Console) Run() {
 			),
 		)
 
+		// get only the top 10
+		ranks = selectTop(ranks, 10)
+
 		// print out the results
 		for _, rank := range ranks {
 			c.ReportRank(rank)
@@ -110,6 +113,16 @@ func (c Console) ReportRank(rr ranking.RankResult) {
 		rr.File.Name(),
 		rr.Score,
 	)
+}
+
+// selectTop returns the "n" first ranks,
+// or the entire ranks if n > len(ranks)
+func selectTop(ranks []ranking.RankResult, n int) []ranking.RankResult {
+	if n <= len(ranks) {
+		return ranks[:n]
+	}
+
+	return ranks
 }
 
 // isStopCondition checks if the input stream contains
