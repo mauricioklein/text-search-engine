@@ -1,30 +1,78 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
+// CliArgs defines the command line arguments
+// provided in the program execution
+type CliArgs struct {
+	DirPath  string
+	Reader   string
+	Reporter string
+	Rank     string
+}
+
 func main() {
-	var reader Reader = DiskReader{}
-	var reporter Reporter = SimpleReporter{}
-	var rank Ranking = LevenshteinRanking{}
+	// parse command line arguments
+	args := parseCliFlags()
 
-	var path = "./test-utils/files/"
+	// instantiate the necessary resources
+	reader := instantiateReader(args.Reader)
+	reporter := instantiateReporter(args.Reporter)
+	rank := instantiateRankingAlgorithm(args.Rank)
 
-	files, err := reader.Read(path)
+	files, err := reader.Read(args.DirPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%d file(s) read in the directory %s\n", len(files), path)
+	fmt.Printf("%d file(s) read in the directory %s\n", len(files), args.DirPath)
 
 	NewConsole(
 		files,
 		rank,
+		reporter,
 		os.Stdin,
 		os.Stderr,
-		reporter,
 	).Run()
+}
+
+func parseCliFlags() CliArgs {
+	path := flag.String("directory", "", "Directory to be read")
+	reader := flag.String("reader", "disk", "The file reader to be used")
+	reporter := flag.String("reporter", "simple", "The result reporter to be used")
+	rank := flag.String("rank", "levenshtein", "The rank algorithm to be used")
+	flag.Parse()
+
+	return CliArgs{
+		DirPath:  *path,
+		Reader:   *reader,
+		Reporter: *reporter,
+		Rank:     *rank,
+	}
+}
+
+func instantiateReader(readerType string) Reader {
+	switch readerType {
+	default:
+		return DiskReader{}
+	}
+}
+
+func instantiateReporter(reporterType string) Reporter {
+	switch reporterType {
+	default:
+		return SimpleReporter{}
+	}
+}
+
+func instantiateRankingAlgorithm(algType string) Ranking {
+	switch algType {
+	default:
+		return LevenshteinRanking{}
+	}
 }
