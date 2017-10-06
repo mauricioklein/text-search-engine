@@ -9,7 +9,7 @@ import (
 )
 
 func TestLoadFromDiskSuccess(t *testing.T) {
-	files, err := Disk{}.Read("../test-utils/files")
+	files, err := Disk{}.Read("../test-utils/3-files")
 	if err != nil {
 		t.Error(err)
 	}
@@ -19,20 +19,20 @@ func TestLoadFromDiskSuccess(t *testing.T) {
 	// file1.txt
 	file := files[0]
 	assert.Implements(t, (*os.FileInfo)(nil), file.FileInfo)
-	assert.Equal(t, "../test-utils/files", file.Path)
-	assert.Equal(t, fileContent("../test-utils/files/file1.txt"), file.Content)
+	assert.Equal(t, "../test-utils/3-files", file.Path)
+	assert.Equal(t, fileContent("../test-utils/3-files/file1.txt"), file.Content)
 
 	// file2.txt
 	file = files[1]
 	assert.Implements(t, (*os.FileInfo)(nil), file.FileInfo)
-	assert.Equal(t, "../test-utils/files", file.Path)
-	assert.Equal(t, fileContent("../test-utils/files/file2.txt"), file.Content)
+	assert.Equal(t, "../test-utils/3-files", file.Path)
+	assert.Equal(t, fileContent("../test-utils/3-files/file2.txt"), file.Content)
 
 	// file3.txt
 	file = files[2]
 	assert.Implements(t, (*os.FileInfo)(nil), file.FileInfo)
-	assert.Equal(t, "../test-utils/files/subdir", file.Path)
-	assert.Equal(t, fileContent("../test-utils/files/subdir/file3.txt"), file.Content)
+	assert.Equal(t, "../test-utils/3-files/subdir", file.Path)
+	assert.Equal(t, fileContent("../test-utils/3-files/subdir/file3.txt"), file.Content)
 }
 
 func TestLoadFromDiskFailure(t *testing.T) {

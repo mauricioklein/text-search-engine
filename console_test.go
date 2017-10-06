@@ -12,7 +12,7 @@ import (
 )
 
 func TestConsoleInputStream(t *testing.T) {
-	c, r, _, _ := NewTestConsole()
+	c, r, _, _ := NewTestConsole("./test-utils/3-files/")
 
 	r.WriteString("Foobar\n")
 
@@ -22,7 +22,7 @@ func TestConsoleInputStream(t *testing.T) {
 }
 
 func TestConsoleOutputStream(t *testing.T) {
-	c, _, w, _ := NewTestConsole()
+	c, _, w, _ := NewTestConsole("./test-utils/3-files/")
 
 	c.Write("Foobar")
 
@@ -32,7 +32,7 @@ func TestConsoleOutputStream(t *testing.T) {
 }
 
 func TestConsoleErrorStream(t *testing.T) {
-	c, _, _, e := NewTestConsole()
+	c, _, _, e := NewTestConsole("./test-utils/3-files/")
 
 	c.Error("a generic error")
 
@@ -41,11 +41,11 @@ func TestConsoleErrorStream(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestConsoleRun(t *testing.T) {
-	c, r, w, _ := NewTestConsole()
+func TestConsoleRun3Files(t *testing.T) {
+	c, r, w, _ := NewTestConsole("./test-utils/3-files/")
 
 	// write "user input" data to the read stream
-	r.Write([]byte("Cat\n")) // actual search sentence
+	r.Write([]byte("Ca\n"))  // actual search sentence
 	r.Write([]byte("\\q\n")) // quit command
 
 	// Wait for the run command to finish (due the quit command above)
@@ -56,13 +56,50 @@ func TestConsoleRun(t *testing.T) {
 
 	// Read response from the write stream
 	actual, _ := w.ReadString('\x00')
-	expected := "search> file1.txt: 100.00% match\nfile2.txt: 100.00% match\nfile3.txt: 0.00% match\nsearch> "
+	expected := `search> file1.txt: 66.67% match
+file2.txt: 66.67% match
+file3.txt: 0.00% match
+search> `
 
 	assert.Equal(t, expected, actual)
 }
 
-func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
-	files, _ := reader.Disk{}.Read("./test-utils/files/")
+func TestConsoleRun11Files(t *testing.T) {
+	c, r, w, _ := NewTestConsole("./test-utils/11-files/")
+
+	// write "user input" data to the read stream
+	r.Write([]byte("Ca\n"))  // actual search sentence
+	r.Write([]byte("\\q\n")) // quit command
+
+	// Wait for the run command to finish (due the quit command above)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go dispatchConsole(c, &wg)
+	wg.Wait()
+
+	// Read response from the write stream
+	actual, _ := w.ReadString('\x00')
+
+	// file11.txt should not be present, since the result
+	// should display only the top 10
+	expected := `search> file1.txt: 66.67% match
+file2.txt: 66.67% match
+file10.txt: 0.00% match
+file3.txt: 0.00% match
+file4.txt: 0.00% match
+file5.txt: 0.00% match
+file6.txt: 0.00% match
+file7.txt: 0.00% match
+file8.txt: 0.00% match
+file9.txt: 0.00% match
+search> `
+
+	// should filter the result to the top 10
+	assert.Equal(t, expected, actual)
+}
+
+func NewTestConsole(dirPath string) (Console, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
+	files, _ := reader.Disk{}.Read(dirPath)
 
 	nWorkers := 3
 	processor := ranking.NewProcessor(files, nWorkers, ranking.LevenshteinRanking{})

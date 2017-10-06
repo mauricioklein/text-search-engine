@@ -21,9 +21,9 @@ func TestSortByRank(t *testing.T) {
 }
 
 func TestSortByName(t *testing.T) {
-	f1, _ := os.Open("../test-utils/files/file1.txt")
-	f2, _ := os.Open("../test-utils/files/file2.txt")
-	f3, _ := os.Open("../test-utils/files/subdir/file3.txt")
+	f1, _ := os.Open("../test-utils/3-files/file1.txt")
+	f2, _ := os.Open("../test-utils/3-files/file2.txt")
+	f3, _ := os.Open("../test-utils/3-files/subdir/file3.txt")
 
 	f1stat, _ := f1.Stat()
 	f2stat, _ := f2.Stat()
@@ -41,9 +41,9 @@ func TestSortByName(t *testing.T) {
 }
 
 func TestSortByRankAndName(t *testing.T) {
-	f1, _ := os.Open("../test-utils/files/file1.txt")
-	f2, _ := os.Open("../test-utils/files/file2.txt")
-	f3, _ := os.Open("../test-utils/files/subdir/file3.txt")
+	f1, _ := os.Open("../test-utils/3-files/file1.txt")
+	f2, _ := os.Open("../test-utils/3-files/file2.txt")
+	f3, _ := os.Open("../test-utils/3-files/subdir/file3.txt")
 
 	f1stat, _ := f1.Stat()
 	f2stat, _ := f2.Stat()
