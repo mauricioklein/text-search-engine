@@ -18,17 +18,17 @@ type CliArgs struct {
 	Reader   string
 	Reporter string
 	RankAlgo string
+	NWorkers int
 }
 
 func main() {
 	// parse command line arguments
 	args := parseCliFlags()
 
-	// instantiate the necessary resources
+	// instantiate the file reader
 	reader := instantiateReader(args.Reader)
-	reporter := instantiateReporter(args.Reporter)
-	rankAlgo := instantiateRankingAlgorithm(args.RankAlgo)
 
+	// read the files
 	files, err := reader.Read(args.DirPath)
 	if err != nil {
 		log.Fatal(err)
@@ -36,9 +36,13 @@ func main() {
 
 	fmt.Printf("%d file(s) read in the directory %s\n", len(files), args.DirPath)
 
+	// instantiate the necessary resources
+	reporter := instantiateReporter(args.Reporter)
+	rankAlgo := instantiateRankingAlgorithm(args.RankAlgo)
+	processor := ranking.NewProcessor(files, args.NWorkers, rankAlgo)
+
 	NewConsole(
-		files,
-		rankAlgo,
+		processor,
 		reporter,
 		os.Stdin,
 		os.Stdout,
@@ -51,6 +55,7 @@ func parseCliFlags() CliArgs {
 	reader := flag.String("reader", "disk", "The file reader to be used")
 	reporter := flag.String("reporter", "simple", "The result reporter to be used")
 	rankAlgo := flag.String("rank", "levenshtein", "The rank algorithm to be used")
+	nWorkers := flag.Int("workers", 3, "Number of paralel workers")
 	flag.Parse()
 
 	return CliArgs{
@@ -58,6 +63,7 @@ func parseCliFlags() CliArgs {
 		Reader:   *reader,
 		Reporter: *reporter,
 		RankAlgo: *rankAlgo,
+		NWorkers: *nWorkers,
 	}
 }
 

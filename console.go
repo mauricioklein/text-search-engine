@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
-	"github.com/mauricioklein/text-search-engine/reader"
 	"github.com/mauricioklein/text-search-engine/report"
 )
 
@@ -19,27 +18,25 @@ const QuitSentence = "\\q"
 // Console defines an instance of the
 // interactive console
 type Console struct {
+	Processor    ranking.Processor
+	Reporter     report.Reporter
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
 	ErrorStream  *bufio.Writer
-	Processor    ranking.Processor
-	Reporter     report.Reporter
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer, errStream io.Writer) Console {
+func NewConsole(processor ranking.Processor, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer, errStream io.Writer) Console {
 	inputBuffer := bufio.NewReader(inputStream)
 	outputBuffer := bufio.NewWriter(outputStream)
 	errBuffer := bufio.NewWriter(errStream)
 
-	processor := ranking.NewProcessor(files, 3, algo)
-
 	return Console{
+		Processor:    processor,
+		Reporter:     reporter,
 		InputStream:  inputBuffer,
 		OutputStream: outputBuffer,
 		ErrorStream:  errBuffer,
-		Processor:    processor,
-		Reporter:     reporter,
 	}
 }
 
