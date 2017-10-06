@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
 )
 
 // CliArgs defines the command line arguments
@@ -58,10 +59,10 @@ func parseCliFlags() CliArgs {
 	}
 }
 
-func instantiateReader(readerType string) Reader {
+func instantiateReader(readerType string) reader.Reader {
 	switch readerType {
 	default:
-		return DiskReader{}
+		return reader.Disk{}
 	}
 }
 

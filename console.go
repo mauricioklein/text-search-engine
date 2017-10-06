@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
 )
 
 // QuitSentence defines the sentence, read from the
@@ -17,7 +18,7 @@ const QuitSentence = "\\q"
 // Console defines an instance of the
 // interactive console
 type Console struct {
-	Files        []File
+	Files        []reader.File
 	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
@@ -27,12 +28,12 @@ type Console struct {
 // RankResult defines the result of a
 // rank canculation for a specific file
 type RankResult struct {
-	File File
+	File reader.File
 	Rank float64
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []File, algo ranking.Algorithm, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
+func NewConsole(files []reader.File, algo ranking.Algorithm, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 
@@ -87,7 +88,7 @@ func (c Console) Run() {
 }
 
 func (c Console) process(sentence string) {
-	jobs := make(chan File, len(c.Files))
+	jobs := make(chan reader.File, len(c.Files))
 	results := make(chan RankResult, len(c.Files))
 
 	// create workers
@@ -126,7 +127,7 @@ func (c Console) ReportResult(rr RankResult) {
 	)
 }
 
-func (c Console) worker(jobs <-chan File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
+func (c Console) worker(jobs <-chan reader.File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for file := range jobs {

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,7 +66,7 @@ func TestConsoleRun(t *testing.T) {
 }
 
 func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
-	files, _ := DiskReader{}.Read("./test-utils/files/")
+	files, _ := reader.Disk{}.Read("./test-utils/files/")
 
 	reader := bytes.NewBuffer([]byte{})
 	writer := bytes.NewBuffer([]byte{})
