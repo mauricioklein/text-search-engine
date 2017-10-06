@@ -1,24 +1,17 @@
-package main
+package reader
 
 import (
 	"fmt"
 	"io/ioutil"
 )
 
-// Reader defines an interface that implements the
-// methods to read files from some resource and translate
-// it to File instances
-type Reader interface {
-	Read(path string) ([]File, error)
-}
-
-// DiskReader defines a implementation of the
+// Disk defines a implementation of the
 // Reader interface to read files from Disk
-type DiskReader struct{}
+type Disk struct{}
 
 // Read reads the files from disk and translate it
 // to the internal File structure
-func (dr DiskReader) Read(path string) ([]File, error) {
+func (d Disk) Read(path string) ([]File, error) {
 	var files []File
 
 	memFiles, err := ioutil.ReadDir(path)

@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 )
 
 // CliArgs defines the command line arguments
@@ -56,23 +60,23 @@ func parseCliFlags() CliArgs {
 	}
 }
 
-func instantiateReader(readerType string) Reader {
+func instantiateReader(readerType string) reader.Reader {
 	switch readerType {
 	default:
-		return DiskReader{}
+		return reader.Disk{}
 	}
 }
 
-func instantiateReporter(reporterType string) Reporter {
+func instantiateReporter(reporterType string) report.Reporter {
 	switch reporterType {
 	default:
-		return SimpleReporter{}
+		return report.SimpleReporter{}
 	}
 }
 
-func instantiateRankingAlgorithm(algType string) Ranking {
+func instantiateRankingAlgorithm(algType string) ranking.Algorithm {
 	switch algType {
 	default:
-		return LevenshteinRanking{}
+		return ranking.LevenshteinRanking{}
 	}
 }

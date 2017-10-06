@@ -5,6 +5,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,15 +67,15 @@ func TestConsoleRun(t *testing.T) {
 }
 
 func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
-	files, _ := DiskReader{}.Read("./test-utils/files/")
+	files, _ := reader.Disk{}.Read("./test-utils/files/")
 
 	reader := bytes.NewBuffer([]byte{})
 	writer := bytes.NewBuffer([]byte{})
 
 	return NewConsole(
 		files,
-		LevenshteinRanking{},
-		SimpleReporter{},
+		ranking.LevenshteinRanking{},
+		report.SimpleReporter{},
 		reader,
 		writer,
 	), reader, writer

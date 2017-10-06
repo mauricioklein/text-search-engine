@@ -1,16 +1,10 @@
-package main
+package ranking
 
 import (
 	"strings"
 
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
-
-// Ranking defines the interface for the ranking
-// algorithms
-type Ranking interface {
-	Calculate(text string, sentence string) float64
-}
 
 // LevenshteinRanking defines the Levenshtein
 // algorithm for string ranking

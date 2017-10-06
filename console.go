@@ -6,6 +6,10 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"github.com/mauricioklein/text-search-engine/ranking"
+	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 )
 
 // QuitSentence defines the sentence, read from the
@@ -15,28 +19,28 @@ const QuitSentence = "\\q"
 // Console defines an instance of the
 // interactive console
 type Console struct {
-	Files        []File
-	Rank         Ranking
+	Files        []reader.File
+	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
-	Reporter     Reporter
+	Reporter     report.Reporter
 }
 
 // RankResult defines the result of a
 // rank canculation for a specific file
 type RankResult struct {
-	File File
+	File reader.File
 	Rank float64
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []File, rank Ranking, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
+func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 
 	return Console{
 		Files:        files,
-		Rank:         rank,
+		Algorithm:    algo,
 		Reporter:     reporter,
 		InputStream:  input,
 		OutputStream: output,
@@ -85,7 +89,7 @@ func (c Console) Run() {
 }
 
 func (c Console) process(sentence string) {
-	jobs := make(chan File, len(c.Files))
+	jobs := make(chan reader.File, len(c.Files))
 	results := make(chan RankResult, len(c.Files))
 
 	// create workers
@@ -124,13 +128,13 @@ func (c Console) ReportResult(rr RankResult) {
 	)
 }
 
-func (c Console) worker(jobs <-chan File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
+func (c Console) worker(jobs <-chan reader.File, results chan<- RankResult, sentence string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for file := range jobs {
 		results <- RankResult{
 			File: file,
-			Rank: c.Rank.Calculate(file.Content, sentence),
+			Rank: c.Algorithm.Calculate(file.Content, sentence),
 		}
 	}
 }
