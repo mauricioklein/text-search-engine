@@ -67,11 +67,13 @@ func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
 	inBuf := bytes.NewBuffer([]byte{})
 	outBuf := bytes.NewBuffer([]byte{})
 	errBuf := bytes.NewBuffer([]byte{})
+	nWorkers := 3
 
 	return NewConsole(
 		files,
 		ranking.LevenshteinRanking{},
 		report.SimpleReporter{},
+		nWorkers,
 		inBuf,
 		outBuf,
 		errBuf,

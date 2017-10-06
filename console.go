@@ -27,12 +27,12 @@ type Console struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer, errStream io.Writer) Console {
+func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, nWorkers int, inputStream io.Reader, outputStream io.Writer, errStream io.Writer) Console {
 	inputBuffer := bufio.NewReader(inputStream)
 	outputBuffer := bufio.NewWriter(outputStream)
 	errBuffer := bufio.NewWriter(errStream)
 
-	processor := ranking.NewProcessor(files, 3, algo)
+	processor := ranking.NewProcessor(files, nWorkers, algo)
 
 	return Console{
 		InputStream:  inputBuffer,
