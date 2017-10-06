@@ -17,7 +17,7 @@ type CliArgs struct {
 	DirPath  string
 	Reader   string
 	Reporter string
-	Rank     string
+	RankAlgo string
 }
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	// instantiate the necessary resources
 	reader := instantiateReader(args.Reader)
 	reporter := instantiateReporter(args.Reporter)
-	rank := instantiateRankingAlgorithm(args.Rank)
+	rankAlgo := instantiateRankingAlgorithm(args.RankAlgo)
 
 	files, err := reader.Read(args.DirPath)
 	if err != nil {
@@ -38,7 +38,7 @@ func main() {
 
 	NewConsole(
 		files,
-		rank,
+		rankAlgo,
 		reporter,
 		os.Stdin,
 		os.Stdout,
@@ -50,14 +50,14 @@ func parseCliFlags() CliArgs {
 	path := flag.String("directory", "", "Directory to be read")
 	reader := flag.String("reader", "disk", "The file reader to be used")
 	reporter := flag.String("reporter", "simple", "The result reporter to be used")
-	rank := flag.String("rank", "levenshtein", "The rank algorithm to be used")
+	rankAlgo := flag.String("rank", "levenshtein", "The rank algorithm to be used")
 	flag.Parse()
 
 	return CliArgs{
 		DirPath:  *path,
 		Reader:   *reader,
 		Reporter: *reporter,
-		Rank:     *rank,
+		RankAlgo: *rankAlgo,
 	}
 }
 
