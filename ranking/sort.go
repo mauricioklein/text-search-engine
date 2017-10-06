@@ -1,4 +1,4 @@
-package main
+package ranking
 
 // ByScoreAndName defines the sorting algorithm of
 // result by ranking and filename
