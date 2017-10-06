@@ -64,16 +64,15 @@ func TestConsoleRun(t *testing.T) {
 func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
 	files, _ := reader.Disk{}.Read("./test-utils/files/")
 
+	nWorkers := 3
+	processor := ranking.NewProcessor(files, nWorkers, ranking.LevenshteinRanking{})
 	inBuf := bytes.NewBuffer([]byte{})
 	outBuf := bytes.NewBuffer([]byte{})
 	errBuf := bytes.NewBuffer([]byte{})
-	nWorkers := 3
 
 	return NewConsole(
-		files,
-		ranking.LevenshteinRanking{},
+		processor,
 		report.SimpleReporter{},
-		nWorkers,
 		inBuf,
 		outBuf,
 		errBuf,
