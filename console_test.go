@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsoleInputStream(t *testing.T) {
+func TestConsoleInputStreamSuccess(t *testing.T) {
 	c, r, _, _ := NewTestConsole("./test-utils/3-files/")
 
 	r.WriteString("Foobar\n")
@@ -19,6 +19,15 @@ func TestConsoleInputStream(t *testing.T) {
 	actual, _ := c.Read()
 	expected := "Foobar"
 	assert.Equal(t, expected, actual)
+}
+
+func TestConsoleInputStreamError(t *testing.T) {
+	c, r, _, _ := NewTestConsole("./test-utils/3-files/")
+
+	r.WriteString("Foobar")
+
+	_, err := c.Read()
+	assert.Error(t, err)
 }
 
 func TestConsoleOutputStream(t *testing.T) {
