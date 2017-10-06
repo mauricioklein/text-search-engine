@@ -16,17 +16,17 @@ func TestCalculate(t *testing.T) {
 	// Rank: file1.txt
 	rank := findByName(ranks, "file1.txt")
 	assert.Equal(t, rank.File.Name(), "file1.txt")
-	assert.Equal(t, rank.Rank, 1.0)
+	assert.Equal(t, rank.Score, 1.0)
 
 	// Rank: file2.txt
 	rank = findByName(ranks, "file2.txt")
 	assert.Equal(t, rank.File.Name(), "file2.txt")
-	assert.Equal(t, rank.Rank, 1.0)
+	assert.Equal(t, rank.Score, 1.0)
 
 	// Rank: file3.txt
 	rank = findByName(ranks, "file3.txt")
 	assert.Equal(t, rank.File.Name(), "file3.txt")
-	assert.Equal(t, rank.Rank, 0.0)
+	assert.Equal(t, rank.Score, 0.0)
 }
 
 func findByName(ranks []RankResult, filename string) *RankResult {

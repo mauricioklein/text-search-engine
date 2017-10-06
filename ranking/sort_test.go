@@ -10,9 +10,9 @@ import (
 )
 
 func TestSortByRank(t *testing.T) {
-	rank25 := RankResult{Rank: 0.25}
-	rank50 := RankResult{Rank: 0.50}
-	rank75 := RankResult{Rank: 0.75}
+	rank25 := RankResult{Score: 0.25}
+	rank50 := RankResult{Score: 0.50}
+	rank75 := RankResult{Score: 0.75}
 
 	ranks := []RankResult{rank75, rank50, rank25}
 	sort.Sort(ByScoreAndName(ranks))
@@ -29,9 +29,9 @@ func TestSortByName(t *testing.T) {
 	f2stat, _ := f2.Stat()
 	f3stat, _ := f3.Stat()
 
-	rank1 := RankResult{File: reader.File{FileInfo: f1stat}, Rank: 0.5}
-	rank2 := RankResult{File: reader.File{FileInfo: f2stat}, Rank: 0.5}
-	rank3 := RankResult{File: reader.File{FileInfo: f3stat}, Rank: 0.5}
+	rank1 := RankResult{File: reader.File{FileInfo: f1stat}, Score: 0.5}
+	rank2 := RankResult{File: reader.File{FileInfo: f2stat}, Score: 0.5}
+	rank3 := RankResult{File: reader.File{FileInfo: f3stat}, Score: 0.5}
 
 	ranks := []RankResult{rank1, rank2, rank3}
 	sort.Sort(ByScoreAndName(ranks))
@@ -49,9 +49,9 @@ func TestSortByRankAndName(t *testing.T) {
 	f2stat, _ := f2.Stat()
 	f3stat, _ := f3.Stat()
 
-	rank1 := RankResult{File: reader.File{FileInfo: f1stat}, Rank: 0.25}
-	rank2 := RankResult{File: reader.File{FileInfo: f2stat}, Rank: 0.50}
-	rank3 := RankResult{File: reader.File{FileInfo: f3stat}, Rank: 0.50}
+	rank1 := RankResult{File: reader.File{FileInfo: f1stat}, Score: 0.25}
+	rank2 := RankResult{File: reader.File{FileInfo: f2stat}, Score: 0.50}
+	rank3 := RankResult{File: reader.File{FileInfo: f3stat}, Score: 0.50}
 
 	ranks := []RankResult{rank3, rank2, rank1}
 	sort.Sort(ByScoreAndName(ranks))

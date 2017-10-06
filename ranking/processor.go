@@ -16,8 +16,8 @@ type Processor struct {
 // RankResult defines the result of a
 // rank canculation for a specific file
 type RankResult struct {
-	File reader.File
-	Rank float64
+	File  reader.File
+	Score float64
 }
 
 // NewProcessor creates a new processor instance
@@ -63,8 +63,8 @@ func (p Processor) worker(jobs <-chan reader.File, results chan<- RankResult, se
 
 	for file := range jobs {
 		results <- RankResult{
-			File: file,
-			Rank: p.RankAlgorithm.Calculate(file.Content, sentence),
+			File:  file,
+			Score: p.RankAlgorithm.Calculate(file.Content, sentence),
 		}
 	}
 }

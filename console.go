@@ -111,7 +111,7 @@ func (c Console) ReportRank(rr ranking.RankResult) {
 	c.Reporter.Report(
 		c.OutputStream,
 		rr.File.Name(),
-		rr.Rank,
+		rr.Score,
 	)
 }
 
