@@ -8,6 +8,7 @@ import (
 
 	"github.com/mauricioklein/text-search-engine/ranking"
 	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 )
 
 // CliArgs defines the command line arguments
@@ -66,10 +67,10 @@ func instantiateReader(readerType string) reader.Reader {
 	}
 }
 
-func instantiateReporter(reporterType string) Reporter {
+func instantiateReporter(reporterType string) report.Reporter {
 	switch reporterType {
 	default:
-		return SimpleReporter{}
+		return report.SimpleReporter{}
 	}
 }
 

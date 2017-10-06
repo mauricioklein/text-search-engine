@@ -9,6 +9,7 @@ import (
 
 	"github.com/mauricioklein/text-search-engine/ranking"
 	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 )
 
 // QuitSentence defines the sentence, read from the
@@ -22,7 +23,7 @@ type Console struct {
 	Algorithm    ranking.Algorithm
 	InputStream  *bufio.Reader
 	OutputStream *bufio.Writer
-	Reporter     Reporter
+	Reporter     report.Reporter
 }
 
 // RankResult defines the result of a
@@ -33,7 +34,7 @@ type RankResult struct {
 }
 
 // NewConsole creates a new instance of Console
-func NewConsole(files []reader.File, algo ranking.Algorithm, reporter Reporter, inputStream io.Reader, outputStream io.Writer) Console {
+func NewConsole(files []reader.File, algo ranking.Algorithm, reporter report.Reporter, inputStream io.Reader, outputStream io.Writer) Console {
 	input := bufio.NewReader(inputStream)
 	output := bufio.NewWriter(outputStream)
 

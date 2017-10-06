@@ -7,6 +7,7 @@ import (
 
 	"github.com/mauricioklein/text-search-engine/ranking"
 	"github.com/mauricioklein/text-search-engine/reader"
+	"github.com/mauricioklein/text-search-engine/report"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -74,7 +75,7 @@ func NewTestConsole() (Console, *bytes.Buffer, *bytes.Buffer) {
 	return NewConsole(
 		files,
 		ranking.LevenshteinRanking{},
-		SimpleReporter{},
+		report.SimpleReporter{},
 		reader,
 		writer,
 	), reader, writer
