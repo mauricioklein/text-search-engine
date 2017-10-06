@@ -42,6 +42,7 @@ func main() {
 		reporter,
 		os.Stdin,
 		os.Stdout,
+		os.Stderr,
 	).Run()
 }
 
