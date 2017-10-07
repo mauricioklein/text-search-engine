@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -20,6 +21,10 @@ type CliArgs struct {
 	RankAlgo string
 	NWorkers int
 }
+
+var inStream io.Reader = os.Stdin
+var outStream io.Writer = os.Stdout
+var errStream io.Writer = os.Stderr
 
 func main() {
 	// parse command line arguments
@@ -44,9 +49,9 @@ func main() {
 	NewConsole(
 		processor,
 		reporter,
-		os.Stdin,
-		os.Stdout,
-		os.Stderr,
+		inStream,
+		outStream,
+		errStream,
 	).Run()
 }
 
@@ -56,6 +61,7 @@ func parseCliFlags() CliArgs {
 	reporter := flag.String("reporter", "simple", "The result reporter to be used")
 	rankAlgo := flag.String("rank", "levenshtein", "The rank algorithm to be used")
 	nWorkers := flag.Int("workers", 3, "Number of paralel workers")
+
 	flag.Parse()
 
 	return CliArgs{
