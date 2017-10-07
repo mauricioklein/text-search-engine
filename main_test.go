@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/mauricioklein/text-search-engine/ranking"
@@ -10,22 +12,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseCliFlags(t *testing.T) {
-	os.Args = append(os.Args,
-		"-directory", "./test-utils/3-files",
-		"-reader", "usb",
-		"-reporter", "my_custom_reporter",
-		"-rank", "foobar_rank",
-		"-workers", "5",
-	)
+func TestMain(t *testing.T) {
+	os.Args = append(os.Args, "-directory", "./test-utils/3-files")
 
-	subject := parseCliFlags()
+	// IO buffers
+	inBuf := bytes.NewBuffer([]byte{})
+	outBuf := bytes.NewBuffer([]byte{})
 
-	assert.Equal(t, subject.DirPath, "./test-utils/3-files")
-	assert.Equal(t, subject.Reader, "usb")
-	assert.Equal(t, subject.Reporter, "my_custom_reporter")
-	assert.Equal(t, subject.RankAlgo, "foobar_rank")
-	assert.Equal(t, subject.NWorkers, 5)
+	// overwrite the standard streams from main
+	// to use our mocked one
+	inStream = inBuf
+	outStream = outBuf
+
+	// user input
+	inBuf.WriteString("Cat\n\\q\n")
+
+	// dispatch main method in a separated routine
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		main()
+	}(&wg)
+	wg.Wait()
+
+	actual, _ := outBuf.ReadString('\x00')
+	expected := `search> file1.txt: 100.00% match
+file2.txt: 0.00% match
+file3.txt: 0.00% match
+search> `
+
+	assert.Equal(t, expected, actual)
 }
 
 func TestInstantiateReader(t *testing.T) {
