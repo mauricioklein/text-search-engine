@@ -4,6 +4,44 @@
 # text-search-engine
 A Golang driven text search engine
 
+## Dependencies
+
+- Go 1.9
+- Govendor 1.0.8 or superior
+
+## Setup
+
+```bash
+# Download external dependencies
+$ govendor sync
+
+# Build the project and install the binary
+$ govendor install +local
+````
+
+## Specs
+
+To run the specs:
+
+```bash
+$ govendor test -v +local
+```
+
+## Run
+
+To run the project:
+
+```bash
+# Run the binary
+$ $GOPATH/bin/text-search-engine -directory [file's directory]
+```
+
+To check all the available command line parameters, run:
+
+```bash
+$ $GOPATH/bin/text-search-engine -h
+```
+
 ## Docker
 
 This project provides a `Dockerfile`, which allows to create a Docker image with the application installed
