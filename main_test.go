@@ -25,7 +25,7 @@ func TestMain(t *testing.T) {
 	outStream = outBuf
 
 	// user input
-	inBuf.WriteString("Cat\n\\q\n")
+	inBuf.WriteString("Lorem ipsum\n\\q\n")
 
 	// dispatch main method in a separated routine
 	var wg sync.WaitGroup
@@ -38,8 +38,8 @@ func TestMain(t *testing.T) {
 
 	actual, _ := outBuf.ReadString('\x00')
 	expected := `search> file1.txt: 100.00% match
-file2.txt: 0.00% match
-file3.txt: 0.00% match
+file3.txt: 100.00% match
+file2.txt: 50.00% match
 search> `
 
 	assert.Equal(t, expected, actual)
