@@ -54,8 +54,8 @@ func TestConsoleRun3Files(t *testing.T) {
 	c, r, w, _ := NewTestConsole("./test-utils/3-files/")
 
 	// write "user input" data to the read stream
-	r.Write([]byte("Lorem\n")) // actual search sentence
-	r.Write([]byte("\\q\n"))   // quit command
+	r.Write([]byte("Lorem\n"))           // actual search sentence
+	r.Write([]byte(QuitSentence + "\n")) // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup
@@ -78,7 +78,7 @@ func TestConsoleRun11Files(t *testing.T) {
 
 	// write "user input" data to the read stream
 	r.Write([]byte("Lorem ipsum dolor sit\n")) // actual search sentence
-	r.Write([]byte("\\q\n"))                   // quit command
+	r.Write([]byte(QuitSentence + "\n"))       // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup
@@ -93,6 +93,7 @@ func TestConsoleRun11Files(t *testing.T) {
 	// should display only the top 10
 	expected := `search> file1.txt: 100.00% match
 file10.txt: 100.00% match
+file11.txt: 100.00% match
 file3.txt: 100.00% match
 file6.txt: 100.00% match
 file7.txt: 100.00% match
@@ -100,7 +101,6 @@ file8.txt: 100.00% match
 file9.txt: 100.00% match
 file2.txt: 75.00% match
 file4.txt: 75.00% match
-file5.txt: 50.00% match
 search> `
 
 	// should filter the result to the top 10
