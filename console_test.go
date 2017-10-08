@@ -54,8 +54,8 @@ func TestConsoleRun3Files(t *testing.T) {
 	c, r, w, _ := NewTestConsole("./test-utils/3-files/")
 
 	// write "user input" data to the read stream
-	r.Write([]byte("Ca\n"))  // actual search sentence
-	r.Write([]byte("\\q\n")) // quit command
+	r.Write([]byte("Lorem\n")) // actual search sentence
+	r.Write([]byte("\\q\n"))   // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup
@@ -65,9 +65,9 @@ func TestConsoleRun3Files(t *testing.T) {
 
 	// Read response from the write stream
 	actual, _ := w.ReadString('\x00')
-	expected := `search> file1.txt: 66.67% match
-file2.txt: 66.67% match
-file3.txt: 0.00% match
+	expected := `search> file1.txt: 100.00% match
+file3.txt: 100.00% match
+file2.txt: 0.00% match
 search> `
 
 	assert.Equal(t, expected, actual)
@@ -77,8 +77,8 @@ func TestConsoleRun11Files(t *testing.T) {
 	c, r, w, _ := NewTestConsole("./test-utils/11-files/")
 
 	// write "user input" data to the read stream
-	r.Write([]byte("Ca\n"))  // actual search sentence
-	r.Write([]byte("\\q\n")) // quit command
+	r.Write([]byte("Lorem ipsum dolor sit\n")) // actual search sentence
+	r.Write([]byte("\\q\n"))                   // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup
@@ -91,16 +91,16 @@ func TestConsoleRun11Files(t *testing.T) {
 
 	// file11.txt should not be present, since the result
 	// should display only the top 10
-	expected := `search> file1.txt: 66.67% match
-file2.txt: 66.67% match
-file10.txt: 0.00% match
-file3.txt: 0.00% match
-file4.txt: 0.00% match
-file5.txt: 0.00% match
-file6.txt: 0.00% match
-file7.txt: 0.00% match
-file8.txt: 0.00% match
-file9.txt: 0.00% match
+	expected := `search> file1.txt: 100.00% match
+file10.txt: 100.00% match
+file3.txt: 100.00% match
+file6.txt: 100.00% match
+file7.txt: 100.00% match
+file8.txt: 100.00% match
+file9.txt: 100.00% match
+file2.txt: 75.00% match
+file4.txt: 75.00% match
+file5.txt: 50.00% match
 search> `
 
 	// should filter the result to the top 10
