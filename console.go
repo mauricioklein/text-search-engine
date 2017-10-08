@@ -13,7 +13,7 @@ import (
 
 // QuitSentence defines the sentence, read from the
 // input stream, to quit the console
-const QuitSentence = "\\q"
+const QuitSentence = ":quit"
 
 // Console defines an instance of the
 // interactive console

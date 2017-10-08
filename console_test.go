@@ -54,8 +54,8 @@ func TestConsoleRun3Files(t *testing.T) {
 	c, r, w, _ := NewTestConsole("./test-utils/3-files/")
 
 	// write "user input" data to the read stream
-	r.Write([]byte("Lorem\n")) // actual search sentence
-	r.Write([]byte("\\q\n"))   // quit command
+	r.Write([]byte("Lorem\n"))           // actual search sentence
+	r.Write([]byte(QuitSentence + "\n")) // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup
@@ -78,7 +78,7 @@ func TestConsoleRun11Files(t *testing.T) {
 
 	// write "user input" data to the read stream
 	r.Write([]byte("Lorem ipsum dolor sit\n")) // actual search sentence
-	r.Write([]byte("\\q\n"))                   // quit command
+	r.Write([]byte(QuitSentence + "\n"))       // quit command
 
 	// Wait for the run command to finish (due the quit command above)
 	var wg sync.WaitGroup

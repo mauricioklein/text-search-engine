@@ -25,7 +25,8 @@ func TestMain(t *testing.T) {
 	outStream = outBuf
 
 	// user input
-	inBuf.WriteString("Lorem ipsum\n\\q\n")
+	inBuf.WriteString("Lorem ipsum\n")
+	inBuf.WriteString(QuitSentence + "\n")
 
 	// dispatch main method in a separated routine
 	var wg sync.WaitGroup
