@@ -42,6 +42,79 @@ To check all the available command line parameters, run:
 $ $GOPATH/bin/text-search-engine -h
 ```
 
+## Terminal
+
+Right after running the system, an interactive terminal will be present on the console.
+This console will accept any character as input until the first line break.
+For each input sentence, the rank is calculated against each read file and the top 10 ranks will be displayed
+as result.
+To quit the system, just submit the quit sentence: `:quit`
+
+```bash
+$ ./text-search-engine -directory test-utils/11-files
+
+11 file(s) read in the directory test-utils/11-files
+
+search> Lorem
+file1.txt: 100.00% match
+file10.txt: 100.00% match
+file11.txt: 100.00% match
+file3.txt: 100.00% match
+file6.txt: 100.00% match
+file7.txt: 100.00% match
+file8.txt: 100.00% match
+file9.txt: 100.00% match
+file2.txt: 0.00% match
+file4.txt: 0.00% match
+
+search> dolor
+file1.txt: 100.00% match
+file10.txt: 100.00% match
+file11.txt: 100.00% match
+file2.txt: 100.00% match
+file3.txt: 100.00% match
+file4.txt: 100.00% match
+file6.txt: 100.00% match
+file7.txt: 100.00% match
+file8.txt: 100.00% match
+file9.txt: 100.00% match
+
+search> :quit 
+
+$
+```
+
+## The Algorithm
+
+The matching algorithm implemented is based on the [Levenshtein distance algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance).
+
+The input sequence is broken into words. A word is defined by any sequence of characters, delimited
+by a space or a line break. Thus, for each word, the Levenshtein distance to the text is calculated.
+The score is based on the shortest distance calculated.
+Finally, the final score is the average value among all the calculated scores
+
+Example:
+
+- Input sentence: "Far Fo"
+- Content: "The Far Fox"
+
+Distances:
+
+| Sentence Word | File Word | Distance    |
+|:-------------:|:---------:|:-----------:|
+| Far           | The       | 3           |
+| Far           | Far       | 0 (minimum) |
+| Far           | Fox       | 2           |
+| Fo            | The       | 3           |
+| Fo            | Far       | 2           |
+| Fo            | Fox       | 1 (minimum) |
+
+-  Score for "Far": 0 (minimum distance) / 3 letters of word ->  *Score: 1.000*
+-  Score for "Fo": 1 (minimum distance) / 2 letters of word ->  *Score: 0.666*
+
+
+> Rank = (1.0 + 0.666) / 2 = 0.833 or **83.3% Match**
+
 ## Docker
 
 This project provides a `Dockerfile`, which allows to create a Docker image with the application installed

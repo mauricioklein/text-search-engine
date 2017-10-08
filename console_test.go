@@ -93,6 +93,7 @@ func TestConsoleRun11Files(t *testing.T) {
 	// should display only the top 10
 	expected := `search> file1.txt: 100.00% match
 file10.txt: 100.00% match
+file11.txt: 100.00% match
 file3.txt: 100.00% match
 file6.txt: 100.00% match
 file7.txt: 100.00% match
@@ -100,7 +101,6 @@ file8.txt: 100.00% match
 file9.txt: 100.00% match
 file2.txt: 75.00% match
 file4.txt: 75.00% match
-file5.txt: 50.00% match
 search> `
 
 	// should filter the result to the top 10
