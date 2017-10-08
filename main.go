@@ -39,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%d file(s) read in the directory %s\n", len(files), args.DirPath)
+	fmt.Printf("%d file(s) read from the directory %s\n", len(files), args.DirPath)
 
 	// instantiate the necessary resources
 	reporter := instantiateReporter(args.Reporter)

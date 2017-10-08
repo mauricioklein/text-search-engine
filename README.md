@@ -100,18 +100,22 @@ Example:
 
 Distances:
 
-| Sentence Word | File Word | Distance    |
-|:-------------:|:---------:|:-----------:|
-| Far           | The       | 3           |
-| Far           | Far       | 0 (minimum) |
-| Far           | Fox       | 2           |
-| Fo            | The       | 3           |
-| Fo            | Far       | 2           |
-| Fo            | Fox       | 1 (minimum) |
+| Sentence Word | Target Word | Distance    |
+|:-------------:|:-----------:|:-----------:|
+| Far           | The         | 3           |
+| Far           | Far         | 0 (minimum) |
+| Far           | Fox         | 2           |
+| Fo            | The         | 3           |
+| Fo            | Far         | 2           |
+| Fo            | Fox         | 1 (minimum) |
 
--  Score for "Far": 0 (minimum distance) / 3 letters of word ->  *Score: 1.000*
--  Score for "Fo": 1 (minimum distance) / 2 letters of word ->  *Score: 0.666*
+-  Score for "Far": 
 
+    > Score = 1 - (MIN_DIST / len(TARGET_WORD)) = 1 - (0 / 3) = *1.0*
+
+-  Score for "Fo": 
+
+    > Score = 1 - (MIN_DIST / len(TARGET_WORD)) = 1 - (1 / 3) = *0.666*
 
 > Rank = (1.0 + 0.666) / 2 = 0.833 or **83.3% Match**
 
